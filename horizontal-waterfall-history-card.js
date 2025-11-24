@@ -9,6 +9,21 @@ const threshold_default_boolean = [
   { value: 1, color: '#EEEEEE' },  // on
 ];
 
+const threshold_nws_temperature = [
+  { "value": 0, "color": "#9370DB" },
+  { "value": 10, "color": "#4169E1" },
+  { "value": 20, "color": "#00BFFF" },
+  { "value": 30, "color": "#00FFFF" },
+  { "value": 40, "color": "#32CD32" },
+  { "value": 50, "color": "#ADFF2F" },
+  { "value": 60, "color": "#FFD700" },
+  { "value": 70, "color": "#FFA500" },
+  { "value": 80, "color": "#FF4500" },
+  { "value": 90, "color": "#FF0000" },
+  { "value": 100, "color": "#8B0000" },
+  { "value": 110, "color": "#800000" }
+]
+
 class waterfallHistoryCard extends HTMLElement {
   // FIX: Hardcoded default domain icons
   DEFAULT_DOMAIN_ICONS = {
@@ -72,6 +87,7 @@ if (!config.entities || !Array.isArray(config.entities) || config.entities.lengt
         min_value: config.min_value || null,
         max_value: config.max_value || null,
         thresholds: config.thresholds || null,
+        nws_thresholds: config.nws_thresholds || false,
         gradient: config.gradient || false,
         show_current: config.show_current !== false,
         show_labels: config.show_labels !== false,
@@ -474,10 +490,13 @@ const history = [...(processedHistories[entityId] || [])];
     if (value === null || isNaN(value)) return '#666666';
 
     let thresholds = entityConfig.thresholds ?? this.config.thresholds;
+    let nws_threholds = entityConfig.nws_thresholds ?? this.config.nws_thresholds;
     
     // NEW: Check if this is a binary value and apply binary colors
     if (!thresholds && this.isBinaryValue(value)) {
       thresholds = this.getBinaryColors(entityConfig);
+    } else if (nws_thresholds) {
+      thresholds = threshold_nws_temperature;
     } else if (!thresholds) {
       thresholds = threshold_default_number;
     }
